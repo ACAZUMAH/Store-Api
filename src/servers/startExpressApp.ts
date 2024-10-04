@@ -27,13 +27,11 @@ const startExpressApp = async (): Promise<Application> =>{
     app.use(helmet());
     app.use(cors());
     app.use(xss());
-
     router.get('/', (req, res) => {
         res.send(
-            '<h1>Welcome to the store API<h1><a href="/api-docs">Docummantation</a>'
+            '<h1>Welcome to the store API<h1><a href="https://documenter.getpostman.com/view/34362641/2sAXxMesWt">Docummantation</a>'
         );
     });
-
     app.use('/api-docs', 
         swaggerUi.serve, 
         swaggerUi.setup(swaggerDocument)
@@ -45,7 +43,6 @@ const startExpressApp = async (): Promise<Application> =>{
             message: 'Unable to find the requested resource!'
         });
     })
-
     return app;
 };
 
