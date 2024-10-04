@@ -7,9 +7,7 @@ const express_1 = require("express");
 const controller_1 = __importDefault(require("../controller"));
 const router = (0, express_1.Router)();
 router.get('/', (req, res) => {
-    res.json({
-        message: 'Welcome to the store API'
-    });
+    res.send('Welcome to the store API');
 });
 router.route('/api/products')
     .post(controller_1.default.postProducts)
