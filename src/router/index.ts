@@ -3,6 +3,12 @@ import products from "../controller";
 
 const router = Router();
 
+router.get('/', (req, res) => {
+    res.json({
+        message: 'Welcome to the store API'
+    });
+})
+
 router.route('/api/products')
 .post(products.postProducts)
 .get(products.getAllProducts)
