@@ -1,0 +1,250 @@
+openapi: 3.0.0
+info:
+  title: store API
+  description: 'The Product Management API provides a set of endpoints to perform essential CRUD operations (Create, Read, Update, and Delete) for managing products within a system. It is designed to support a dynamic and flexible e-commerce or inventory system, enabling users to add, view, update, and delete products.'
+  contact: {}
+  version: '1.0'
+servers:
+- url: https://store-api-phi-one.vercel.app/
+  variables: {}
+paths:
+  /api/products:
+    post:
+      tags:
+      - Products
+      summary: post new Product
+      description: ''
+      operationId: postnewProduct
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/postnewProductRequest'
+              - example:
+                  name: e.g Iphone 16
+                  company: e.g apple
+                  price: 200
+                  rating: 4.5
+            example:
+              name: e.g Iphone 16
+              company: e.g apple
+              price: 200
+              rating: 4.5
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/postnewProductRequest'
+                - {}
+      deprecated: false
+      security: []
+    get:
+      tags:
+      - Products
+      summary: get products
+      description: ''
+      operationId: getproducts
+      parameters:
+      - name: page
+        in: query
+        description: 'Page number for pagination (default: 1)'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: 'Number of items per page (default: 10)'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: Sorting field (e.g., price, name, company); add - for descending order (e.g., -price)
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: name
+        in: query
+        description: Filter by product name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: company
+        in: query
+        description: filter by company name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: price
+        in: query
+        description: filter by price
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            text/plain:
+              schema:
+                type: object
+      deprecated: false
+      security: []
+  /api/products/{id}:
+    get:
+      tags:
+      - Products
+      summary: get a single productt
+      description: ''
+      operationId: getasingleproductt
+      parameters:
+      - name: id
+        in: path
+        description: id of the product
+        required: true
+        style: simple
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            text/plain:
+              schema:
+                type: object
+      deprecated: false
+      security: []
+    put:
+      tags:
+      - Products
+      summary: updata a product
+      description: ''
+      operationId: updataaproduct
+      parameters:
+      - name: id
+        in: path
+        description: ''
+        required: true
+        style: simple
+        schema:
+          type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/updataaproductrequest'
+              - example:
+                  name: product name
+                  company: comapny name
+                  price: price of the product
+            example:
+              name: product name
+              company: comapny name
+              price: price of the product
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/updataaproductrequest'
+                - {}
+      deprecated: false
+      security: []
+    delete:
+      tags:
+      - Products
+      summary: delete a product
+      description: ''
+      operationId: deleteaproduct
+      parameters:
+      - name: id
+        in: path
+        description: id of the product
+        required: true
+        style: simple
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            text/plain:
+              schema:
+                type: string
+      deprecated: false
+      security: []
+components:
+  schemas:
+    postnewProductRequest:
+      title: postnewProductRequest
+      required:
+      - name
+      - company
+      - price
+      - rating
+      type: object
+      properties:
+        name:
+          type: string
+        company:
+          type: string
+        price:
+          type: integer
+          format: int32
+        rating:
+          type: number
+      example:
+        name: e.g Iphone 16
+        company: e.g apple
+        price: 200
+        rating: 4.5
+    updataaproductrequest:
+      title: updataaproductrequest
+      required:
+      - name
+      - company
+      - price
+      type: object
+      properties:
+        name:
+          type: string
+        company:
+          type: string
+        price:
+          type: string
+      example:
+        name: product name
+        company: comapny name
+        price: price of the product
+tags:
+- name: Products
+  description: ''

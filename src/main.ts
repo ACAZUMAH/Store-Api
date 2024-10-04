@@ -7,5 +7,6 @@ const main = async () => {
 }
 
 main().catch(
-    err => console.error('unable to start server')
+    err => 
+        console.error('unable to start server')
 )

@@ -6,9 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const controller_1 = __importDefault(require("../controller"));
 const router = (0, express_1.Router)();
-router.get('/', (req, res) => {
-    res.send('Welcome to the store API');
-});
 router.route('/api/products')
     .post(controller_1.default.postProducts)
     .get(controller_1.default.getAllProducts);

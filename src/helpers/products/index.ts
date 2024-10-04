@@ -1,5 +1,4 @@
 import { Types } from 'mongoose'
-import utils from '../utils'
 import createError from 'http-errors'
 import { product, Query } from '../../services/types'
 import { validateData } from './validate-products'
@@ -16,7 +15,7 @@ export const addProduct = async (data: product) => {
     const product= await products.create( { ...data } );
 
     return product;
-}
+};
 
 /**
  * find product by id
@@ -29,7 +28,7 @@ export const findProductById = async (id: string) => {
     }
     const product = await products.findById(id);
     return product;
-}
+};
 
 /**
  * getting products and paging, limiting, sorting and filtering
@@ -60,7 +59,7 @@ export const getProducts = async (query: Query) => {
     result = result.skip(skip).limit(limits);
     const product = await result;
     return product;
-}
+};
 
 /**
  * update product
@@ -76,7 +75,7 @@ export const updateProduct = async (id: any, data: product) => {
     await validateData(data)
     const product = await products.findByIdAndUpdate(id, { ...data  });
     return product;
-}
+};
 
 /**
  * delete product
@@ -90,7 +89,8 @@ export const deleteProduct = async (id: string) => {
     }
     if(await products.findByIdAndDelete(id))
         return true;
-}
+};
+
 export default {
     addProduct,
     getProducts,
