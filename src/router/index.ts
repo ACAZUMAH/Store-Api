@@ -4,7 +4,7 @@ import products from "../controller";
 const router = Router();
 
 router.get('/', (req, res) => {
-    res.json(
+    res.send(
         'Welcome to the store API'
     );
 })
