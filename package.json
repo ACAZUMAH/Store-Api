@@ -29,6 +29,7 @@
     "http-errors": "^2.0.0",
     "mongoose": "^8.7.0",
     "rate-limiter": "^0.2.0",
+    "swagger-ui": "^5.17.14",
     "uuid": "^10.0.0",
     "xss-clean": "^0.1.4"
   },
