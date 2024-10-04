@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteProduct = exports.updateProduct = exports.getProducts = exports.findProductById = exports.addProduct = void 0;
-const uuid_1 = require("uuid");
-const utils_1 = __importDefault(require("../utils"));
+const mongoose_1 = require("mongoose");
 const http_errors_1 = __importDefault(require("http-errors"));
 const validate_products_1 = require("./validate-products");
+const products_1 = __importDefault(require("../../models/products"));
 /**
  * add product to the database
  * @param data product data to be added
@@ -15,11 +15,8 @@ const validate_products_1 = require("./validate-products");
  */
 const addProduct = async (data) => {
     await (0, validate_products_1.validateData)(data);
-    const products = await utils_1.default.read();
-    const newProduct = { id: (0, uuid_1.v4)(), ...data };
-    products.push(newProduct);
-    await utils_1.default.write(products);
-    return products;
+    const product = await products_1.default.create({ ...data });
+    return product;
 };
 exports.addProduct = addProduct;
 /**
@@ -28,8 +25,10 @@ exports.addProduct = addProduct;
  * @returns prouduct found by id
  */
 const findProductById = async (id) => {
-    const products = await utils_1.default.read();
-    const product = products.find((product) => product.id === id);
+    if (!mongoose_1.Types.ObjectId.isValid(id)) {
+        throw http_errors_1.default.BadRequest('Invalid product id');
+    }
+    const product = await products_1.default.findById(id);
     return product;
 };
 exports.findProductById = findProductById;
@@ -39,22 +38,28 @@ exports.findProductById = findProductById;
  * @returns the list of products
  */
 const getProducts = async (query) => {
-    const { sort, name, company, } = query;
-    const page = query.page || 1;
-    const limit = query.limit || 10;
-    let products = await utils_1.default.read();
-    if (page && limit) {
-        const start = (page - 1) * limit;
-        const end = page * limit;
-        products = products.slice(start, end);
+    const { page, limit, sort, name, company } = query;
+    const queyObject = {};
+    if (name) {
+        queyObject.name = { $regex: name, $options: 'i' };
     }
+    if (company) {
+        queyObject.company = company;
+    }
+    let result = products_1.default.find(queyObject);
     if (sort) {
-        products = await utils_1.default.sortProducts(products, sort);
+        const sortList = sort.split(',').join(' ');
+        result = result.sort(sortList);
     }
-    if (name || company) {
-        products = await utils_1.default.filterProducts(products, name, company);
+    else {
+        result = result.sort('createdAt');
     }
-    return products;
+    const pages = Number(page) || 1;
+    const limits = Number(limit) || 10;
+    const skip = (pages - 1) * limits;
+    result = result.skip(skip).limit(limits);
+    const product = await result;
+    return product;
 };
 exports.getProducts = getProducts;
 /**
@@ -65,15 +70,12 @@ exports.getProducts = getProducts;
  * @throws error if product is not updated
  */
 const updateProduct = async (id, data) => {
-    await (0, validate_products_1.validateData)(data);
-    const products = await utils_1.default.read();
-    const product = products.findIndex((product) => product.id === id);
-    if (product === -1) {
+    if (!mongoose_1.Types.ObjectId.isValid(id)) {
         throw http_errors_1.default.NotFound('No product with this id found');
     }
-    products[product] = { id, ...data };
-    await utils_1.default.write(products);
-    return (0, exports.findProductById)(id);
+    await (0, validate_products_1.validateData)(data);
+    const product = await products_1.default.findByIdAndUpdate(id, { ...data });
+    return product;
 };
 exports.updateProduct = updateProduct;
 /**
@@ -83,14 +85,11 @@ exports.updateProduct = updateProduct;
  * @throws error if product is not deleted
  */
 const deleteProduct = async (id) => {
-    const products = await utils_1.default.read();
-    const product = products.findIndex((product) => product.id === id);
-    if (product === -1) {
+    if (!mongoose_1.Types.ObjectId.isValid(id)) {
         throw http_errors_1.default.NotFound('No product with this id found');
     }
-    products.splice(product, 1);
-    await utils_1.default.write(products);
-    return true;
+    if (await products_1.default.findByIdAndDelete(id))
+        return true;
 };
 exports.deleteProduct = deleteProduct;
 exports.default = {

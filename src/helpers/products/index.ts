@@ -1,8 +1,9 @@
-import { v4 } from 'uuid'
+import { Types } from 'mongoose'
 import utils from '../utils'
 import createError from 'http-errors'
 import { product, Query } from '../../services/types'
 import { validateData } from './validate-products'
+import products from '../../models/products'
 
 /**
  * add product to the database
@@ -12,11 +13,9 @@ import { validateData } from './validate-products'
 export const addProduct = async (data: product) => {
     await validateData(data);
 
-    const products = await utils.read();
-    const newProduct = { id: v4(), ...data };
-    products.push(newProduct);
-    await utils.write(products)
-    return products;
+    const product= await products.create( { ...data } );
+
+    return product;
 }
 
 /**
@@ -25,8 +24,10 @@ export const addProduct = async (data: product) => {
  * @returns prouduct found by id
  */
 export const findProductById = async (id: string) => {
-    const products = await utils.read();
-    const product = products.find((product: any) => product.id === id);
+    if(!Types.ObjectId.isValid(id)){
+        throw createError.BadRequest('Invalid product id');
+    }
+    const product = await products.findById(id);
     return product;
 }
 
@@ -36,22 +37,29 @@ export const findProductById = async (id: string) => {
  * @returns the list of products
  */
 export const getProducts = async (query: Query) => {
-    const  { sort, name, company, } = query;
-    const page = query.page || 1;
-    const limit = query.limit || 10;
-    let products = await utils.read();
-    if(page && limit){
-        const start = (page - 1) * limit;
-        const end = page * limit;
-        products = products.slice(start, end)
+    const { page, limit, sort, name, company } = query;
+
+    const queyObject: Query = {};
+    if(name) {
+        queyObject.name = { $regex: name as string, $options: 'i' };
     }
+    if(company){
+        queyObject.company = company;
+    }
+    let result = products.find(queyObject);
     if(sort){
-        products = await utils.sortProducts(products, sort);
+        const sortList = sort.split(',').join(' ');
+        result = result.sort(sortList);
+    }else{
+        result = result.sort('createdAt');
     }
-    if(name || company){
-        products = await utils.filterProducts(products, name, company);
-    }
-    return products;
+
+    const pages = Number(page) || 1;
+    const limits = Number(limit) || 10;
+    const skip = (pages - 1) * limits;
+    result = result.skip(skip).limit(limits);
+    const product = await result;
+    return product;
 }
 
 /**
@@ -62,16 +70,12 @@ export const getProducts = async (query: Query) => {
  * @throws error if product is not updated
  */
 export const updateProduct = async (id: any, data: product) => {
-    await validateData(data)
-
-    const products = await utils.read();
-    const product = products.findIndex((product: any) => product.id === id);
-    if(product === -1){
+    if(!Types.ObjectId.isValid(id)){
         throw createError.NotFound('No product with this id found');
     }
-    products[product] = { id, ...data };
-    await utils.write(products);
-    return findProductById(id);
+    await validateData(data)
+    const product = await products.findByIdAndUpdate(id, { ...data  });
+    return product;
 }
 
 /**
@@ -81,14 +85,11 @@ export const updateProduct = async (id: any, data: product) => {
  * @throws error if product is not deleted
  */
 export const deleteProduct = async (id: string) => {
-    const products = await utils.read();
-    const product = products.findIndex((product: any) => product.id === id);
-    if(product === -1){
+    if(!Types.ObjectId.isValid(id)){
         throw createError.NotFound('No product with this id found');
     }
-    products.splice(product, 1);
-    await utils.write(products);
-    return true;
+    if(await products.findByIdAndDelete(id))
+        return true;
 }
 export default {
     addProduct,

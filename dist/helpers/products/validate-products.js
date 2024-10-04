@@ -27,7 +27,7 @@ const validateData = async (data) => {
     const validate = ajv.compile(schema);
     const isValid = validate(data);
     if (!isValid)
-        throw http_errors_1.default.BadRequest('Invalid input data');
+        throw http_errors_1.default.BadRequest('Invalid input data or misisng fields');
     return true;
 };
 exports.validateData = validateData;

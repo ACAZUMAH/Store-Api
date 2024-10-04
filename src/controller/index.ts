@@ -12,10 +12,10 @@ import helper from '../helpers/products';
  */
 export const postProducts = async (req: Request, res: Response) => {
     const product = await helper.addProduct( { ...req.body });
-    if(product.lentgh === 0){
+    if(!product){
         throw new createError.BadRequest('Unable to post product');
     }    
-    return res.status(201).json({ 'updated': product });
+    return res.status(201).json({ 'created': product });
 }
 
 /**
@@ -27,10 +27,10 @@ export const postProducts = async (req: Request, res: Response) => {
  */
 export const getAllProducts = async (req: Request, res: Response) => {
     const products = await helper.getProducts({ ...req.query });
-    if(products.length === 0){
+    if(!products){
         throw new createError.NotFound('No products found');
     }
-    return  res.status(200).json({ 'products': products });
+    return res.status(200).json({ 'products': products });
 }
 
 /**

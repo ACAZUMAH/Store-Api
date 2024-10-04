@@ -28,7 +28,7 @@ export const validateData = async (data: product ) => {
     const isValid = validate(data);
 
     if(!isValid) 
-        throw createError.BadRequest('Invalid input data');
+        throw createError.BadRequest('Invalid input data or misisng fields');
 
     return true;
 }

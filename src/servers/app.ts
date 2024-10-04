@@ -1,8 +1,10 @@
 import http from 'http';
 import startExpressApp from './startExpressApp';
-import e from 'express';
+import connectDB from '../models/db';
 
 const startServer = async () => {
+
+    await connectDB(process.env.DATABASE_URL as string);
 
     const app = await startExpressApp();
 

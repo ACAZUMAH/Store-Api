@@ -15,10 +15,10 @@ const products_1 = __importDefault(require("../helpers/products"));
  */
 const postProducts = async (req, res) => {
     const product = await products_1.default.addProduct({ ...req.body });
-    if (product.lentgh === 0) {
+    if (!product) {
         throw new http_errors_1.default.BadRequest('Unable to post product');
     }
-    return res.status(201).json({ 'updated': product });
+    return res.status(201).json({ 'created': product });
 };
 exports.postProducts = postProducts;
 /**
@@ -30,7 +30,7 @@ exports.postProducts = postProducts;
  */
 const getAllProducts = async (req, res) => {
     const products = await products_1.default.getProducts({ ...req.query });
-    if (products.length === 0) {
+    if (!products) {
         throw new http_errors_1.default.NotFound('No products found');
     }
     return res.status(200).json({ 'products': products });

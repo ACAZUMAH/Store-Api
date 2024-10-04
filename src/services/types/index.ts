@@ -3,7 +3,7 @@ export interface Query{
     page?: number;
     limit?: number;
     sort?: string;
-    name?: string;
+    name?: string | object;
     company?: string;
     price?: number;
 }
