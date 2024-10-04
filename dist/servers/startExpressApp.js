@@ -29,7 +29,7 @@ const startExpressApp = async () => {
     app.use((0, cors_1.default)());
     app.use((0, xss_clean_1.default)());
     router_1.default.get('/', (req, res) => {
-        res.send('<h1>Welcome to the store API<h1><a href="/api-docs">Docummantation</a>');
+        res.send('<h1>Welcome to the store API<h1><a href="https://documenter.getpostman.com/view/34362641/2sAXxMesWt">Docummantation</a>');
     });
     app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerDocument));
     app.use(router_1.default);
